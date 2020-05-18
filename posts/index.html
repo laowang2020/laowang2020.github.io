@@ -34,7 +34,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://laowang2020.github.io/posts/" />
-<meta property="og:updated_time" content="2020-05-17T12:39:06+08:00" />
+<meta property="og:updated_time" content="2020-05-18T15:59:27+08:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -91,6 +91,30 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="https://laowang2020.github.io/posts/%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8Emaven/" class="link black dim">
+        包管理与maven
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      java的包管理与maven初步 jvm的工作流程  执行一个类的字节码 执行过程中碰到新的类，加载它 接着执行  在哪里可以找到类&mdash;&ndash;类路径(Classpath) -classpath/-cp   类在加载过程中会去classpath中逐个寻找对应的类，碰到了jar包就会去解压，碰到文件夹就会进文件夹找，知道找不到为止就会报错
+  类的全限定类名（目录层级）确定了唯一的类
+  jar包就是把许多类放在一起打的压缩包
+  传递性依赖
+ 你依赖的类还依赖了别的类 你要运行一个程序，不能只放一个jar包，需要把所有要用的类放到classpath    Classpath hell（依赖地狱）
+ 全限定类名是类的唯一标识 当多个同名类同时出现在Classpath中，就是噩梦的开始  要引用哪个类呢？&mdash;-谁在前面就用谁   但是同名类里的代码不一样，可能会产生错误    包管理  你要使用一些第三方类，就要告诉jvm去哪里找 包管理的本质就是告诉jvm如何找到所需的第三方类库 解决其中的冲突问题  Maven&mdash;划时代的包管理   约定优于配置
+  Maven远远不止是包管理工具
+  Maven的中央仓库
+ 按照一定的约定存储包    Maven 的本地仓库
+ 默认位于~~/.2 下载的第三方包在这里进行缓存    Maven的包
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">

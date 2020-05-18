@@ -6,10 +6,28 @@
     <description>Recent content in Posts on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Sun, 17 May 2020 12:39:06 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 18 May 2020 15:59:27 +0800</lastBuildDate>
     
 	<atom:link href="https://laowang2020.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>包管理与maven</title>
+      <link>https://laowang2020.github.io/posts/%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8Emaven/</link>
+      <pubDate>Mon, 18 May 2020 15:59:27 +0800</pubDate>
+      
+      <guid>https://laowang2020.github.io/posts/%E5%8C%85%E7%AE%A1%E7%90%86%E4%B8%8Emaven/</guid>
+      <description>java的包管理与maven初步 jvm的工作流程  执行一个类的字节码 执行过程中碰到新的类，加载它 接着执行  在哪里可以找到类&amp;mdash;&amp;ndash;类路径(Classpath) -classpath/-cp   类在加载过程中会去classpath中逐个寻找对应的类，碰到了jar包就会去解压，碰到文件夹就会进文件夹找，知道找不到为止就会报错
+  类的全限定类名（目录层级）确定了唯一的类
+  jar包就是把许多类放在一起打的压缩包
+  传递性依赖
+ 你依赖的类还依赖了别的类 你要运行一个程序，不能只放一个jar包，需要把所有要用的类放到classpath    Classpath hell（依赖地狱）
+ 全限定类名是类的唯一标识 当多个同名类同时出现在Classpath中，就是噩梦的开始  要引用哪个类呢？&amp;mdash;-谁在前面就用谁   但是同名类里的代码不一样，可能会产生错误    包管理  你要使用一些第三方类，就要告诉jvm去哪里找 包管理的本质就是告诉jvm如何找到所需的第三方类库 解决其中的冲突问题  Maven&amp;mdash;划时代的包管理   约定优于配置
+  Maven远远不止是包管理工具
+  Maven的中央仓库
+ 按照一定的约定存储包    Maven 的本地仓库
+ 默认位于~~/.2 下载的第三方包在这里进行缓存    Maven的包</description>
+    </item>
     
     <item>
       <title>第一篇博客</title>
