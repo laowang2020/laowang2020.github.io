@@ -6,10 +6,23 @@
     <description>Recent content on My New Hugo Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Mon, 18 May 2020 15:59:27 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 23 May 2020 16:28:09 +0800</lastBuildDate>
     
 	<atom:link href="https://laowang2020.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Collections</title>
+      <link>https://laowang2020.github.io/posts/collections/</link>
+      <pubDate>Sat, 23 May 2020 16:28:09 +0800</pubDate>
+      
+      <guid>https://laowang2020.github.io/posts/collections/</guid>
+      <description>Collection体系 数组与集合的区别 数组
+ 数组能存储基本数据类型和引用数据类型 数组的长度不可变  集合
+ 集合是存对象的容器 长度可变（扩容：创建一个更大的空间，然后把原有的所有元素拷贝过去） 只能存储对象，不可以存储引用数据类型  Collection的基本概念   Collection是整个collect体系的根接口，Collection表示一组对象，这些对象也称为collection的元素
+  JDK不提供此接口的任何直接实现，它提供更具体的子接口实现，
+  Collection体系的常用类  List(有序可重复) （存放对象的集合）  ArrayList (底层数据结构是数组，查找快，增删慢) LinkedList (底层数据结构是链表，查找慢，增删快)   Set(无序不可重复)  HashSet (用哈希算法，hashcode 和 equals),注意:HashSet插入数据顺序是随机的  LinkedHashSet (插入数据是有序的)   TreeSet (底层数据结构是红黑树，comparable或者comparetor) 判断重复的方法：equal()方法   Map (键值对key和value,键和值是映射关系) （键是唯一的，值可以重复，Map中的key返回的Set集合实质就是一个HashSet）  HashMap TreeMap   HashSet比ArrayList查找速度快的多  Collection 的常用方法 方法 作用 add(E e) 添加一个元素到此collection中 addAll 将指定collection中的所有元素都添加 clear() 移除此collection中的所有元素 contains(Object o) 如果此collection包含指定的元素，返回true containsAll(Collection c) 如果此collection包含指定collection的所有元素，返回true equals(Object o) 比较此collection与指定对象是否相等 hashcode() 返回此collection的哈希码值 isEmpty() 如果此collection不包含任何对象，则返回true iteraator() 返回在此collection的元素上进行迭代的迭代器 remove（Object o） 从此collection移除指定元素，如果存在的话 removeAll(Collection c) 移除此collection中包含指定collection中的所有元素、 retainAll(Collection c) 仅保留此collection中那些也在指定collection中存在的元素，而且还会修改原先的数据（可能会产生错误） size() 返回此collection的元素数 toArray() 返回包含此collection中所有的元素的数组  动态扩容的实现  为什么要指定初始容量？ list集合看上去可以无限添加元素，但最终收到某个容量的限制，这个容量就是初始容量（一个数组） 需要初始容量的原因就是避免某些情况无线扩容导致内存满负荷直到出现故障 如何实现动态扩容？ 旧容量不够时，会通过add（）方法创建一个更大的容量空间，然后把所有的元素拷贝进去，而之前的数字空间就会变成垃圾  java世界里第二重要的约定：hashcode 1.</description>
+    </item>
     
     <item>
       <title>包管理与maven</title>
