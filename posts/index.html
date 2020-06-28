@@ -34,7 +34,7 @@
 <meta property="og:description" content="" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://laowang2020.github.io/posts/" />
-<meta property="og:updated_time" content="2020-05-23T16:28:09+08:00" />
+<meta property="og:updated_time" content="2020-06-28T12:57:54+08:00" />
 <meta itemprop="name" content="Posts">
 <meta itemprop="description" content=""><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Posts"/>
@@ -91,6 +91,30 @@
   <article class="pa3 pa4-ns nested-copy-line-height nested-img">
     <section class="cf ph3 ph5-l pv3 pv4-l f4 tc-l center measure-wide lh-copy mid-gray"></section>
     <section class="flex-ns flex-wrap justify-around mt5">
+      
+        <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
+  <div class="bg-white mb3 pa4 gray overflow-hidden">
+    <span class="f6 db">Posts</span>
+    <h1 class="f3 near-black">
+      <a href="https://laowang2020.github.io/posts/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="link black dim">
+        多线程基本原理
+      </a>
+    </h1>
+    <div class="nested-links f5 lh-copy nested-copy-line-height">
+      多线程基本原理 为什么需要多线程  Java的执⾏模型是同步/阻塞(block)的 从本质上来说是为了占满CPU的使用率，以达到n*100%(n指CPU的核心数)；一般程序可以简单的分为CPU密集型和IO密集型；对于IO密集型应⽤极其有⽤，对于CPU密集型应⽤稍有折扣 ，  多线程带来了什么问题，如何避免？   方法栈是线程私有的
+  静态变量/类变量是被所有线程共享的
+  线程难的本质原因是你要看着同⼀份代码，想象不同的⼈在疯狂地以乱序执⾏它
+  一般来说，问题多出现在需要共享变量的情况下，多个并行线程，需要操作同一个变量，如果对这个变量的操作不是原子性的（比如：i+=1），且由于多个线程的并行，是乱序的，存在会先取值，被截断，再被其他线程取值，计算，赋值，再回到本线程计算，赋值，导致计算结果的不可控制。
+  如何避免？
+ 需要保证操作公共变量时，保证该操作是原子性的，不会被拆分为多个操作，且被乱序执行    线程的生命周期及基本状态  java的线程生命周期有6种状态  New（初始化状态） Runnable（就绪状态） Running（运行状态） Blocked（阻塞状态） Terminated(终止状态)      New(初始化状态)：当线程对象创建后，即进入了新建状态，如：Thread t = new Thread();
+  Runnable(就绪状态): 当调用线程对象的start()方法，线程即进入就绪状态。处于就绪的线程，只是说明此线程已经做好了准备，随时等待CPU调度执行,并不是说执行了start()此线程立即就会执行
+  Running(运行状态): 当就绪状态中的线程获得了CPU执行资源,执行run()中的代码,这样的线程称为运行状态的线程.
+  Blocked(阻塞状态): 处于运行状态中的线程由于某种原因,暂时放弃对CPU的使用权，停止执行,此时进入阻塞状态,直到其进入到就绪状态,才有机会再次被CPU调用以进入到运行状态.线程的阻塞状态分为两种: 第一种,Waiting(无时间限制的等待状态): 这个状态下是不能分配CPU执行的，有三种情况会使得Running状态到waiting状态
+ 调用无参的Object的wait方法.等到notifyAll() 或者 notify() 唤醒就会回到Runnable状态. 调用无参的Thread.join()方法.比如你在主线程里建立了一个线程A,调用A.join(),那么你的主线程是得等A执行完了才会继续执行,这时你的主线程就是等待状态 调用LockSupport.park()方法,LockSupport是Java6引入的一个工具类Java并发包中的锁都是基于它实现的,再调用LockSupport.unpark(Thread thread),就会回到Runnable状态 第二种，Timed_Waiting(有时间限制的等待状态)：  其实这个状态和Waiting就是有没有超时时间的差别，这个状态下也是不能分配CPU执行的。有五种情况会使得Runnable状态到waiting状态。
+    </div>
+  </div>
+</div>
+</div>
       
         <div class="relative w-100 w-30-l mb4 bg-white"><div class="relative w-100 mb4 bg-white nested-copy-line-height">
   <div class="bg-white mb3 pa4 gray overflow-hidden">

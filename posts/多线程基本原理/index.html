@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <title>多线程基本原理 | My New Hugo Site</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <meta name="generator" content="Hugo 0.70.0" />
+    
+    
+      <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+    
+
+    
+    
+      <link href="/dist/css/app.1cb140d8ba31d5b2f1114537dd04802a.css" rel="stylesheet">
+    
+
+    
+
+    
+      
+    
+
+    
+    
+    <meta property="og:title" content="多线程基本原理" />
+<meta property="og:description" content="多线程基本原理 为什么需要多线程  Java的执⾏模型是同步/阻塞(block)的 从本质上来说是为了占满CPU的使用率，以达到n*100%(n指CPU的核心数)；一般程序可以简单的分为CPU密集型和IO密集型；对于IO密集型应⽤极其有⽤，对于CPU密集型应⽤稍有折扣 ，  多线程带来了什么问题，如何避免？   方法栈是线程私有的
+  静态变量/类变量是被所有线程共享的
+  线程难的本质原因是你要看着同⼀份代码，想象不同的⼈在疯狂地以乱序执⾏它
+  一般来说，问题多出现在需要共享变量的情况下，多个并行线程，需要操作同一个变量，如果对这个变量的操作不是原子性的（比如：i&#43;=1），且由于多个线程的并行，是乱序的，存在会先取值，被截断，再被其他线程取值，计算，赋值，再回到本线程计算，赋值，导致计算结果的不可控制。
+  如何避免？
+ 需要保证操作公共变量时，保证该操作是原子性的，不会被拆分为多个操作，且被乱序执行    线程的生命周期及基本状态  java的线程生命周期有6种状态  New（初始化状态） Runnable（就绪状态） Running（运行状态） Blocked（阻塞状态） Terminated(终止状态)      New(初始化状态)：当线程对象创建后，即进入了新建状态，如：Thread t = new Thread();
+  Runnable(就绪状态): 当调用线程对象的start()方法，线程即进入就绪状态。处于就绪的线程，只是说明此线程已经做好了准备，随时等待CPU调度执行,并不是说执行了start()此线程立即就会执行
+  Running(运行状态): 当就绪状态中的线程获得了CPU执行资源,执行run()中的代码,这样的线程称为运行状态的线程.
+  Blocked(阻塞状态): 处于运行状态中的线程由于某种原因,暂时放弃对CPU的使用权，停止执行,此时进入阻塞状态,直到其进入到就绪状态,才有机会再次被CPU调用以进入到运行状态.线程的阻塞状态分为两种: 第一种,Waiting(无时间限制的等待状态): 这个状态下是不能分配CPU执行的，有三种情况会使得Running状态到waiting状态
+ 调用无参的Object的wait方法.等到notifyAll() 或者 notify() 唤醒就会回到Runnable状态. 调用无参的Thread.join()方法.比如你在主线程里建立了一个线程A,调用A.join(),那么你的主线程是得等A执行完了才会继续执行,这时你的主线程就是等待状态 调用LockSupport.park()方法,LockSupport是Java6引入的一个工具类Java并发包中的锁都是基于它实现的,再调用LockSupport.unpark(Thread thread),就会回到Runnable状态 第二种，Timed_Waiting(有时间限制的等待状态)：  其实这个状态和Waiting就是有没有超时时间的差别，这个状态下也是不能分配CPU执行的。有五种情况会使得Runnable状态到waiting状态。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://laowang2020.github.io/posts/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" />
+<meta property="article:published_time" content="2020-06-28T12:57:54+08:00" />
+<meta property="article:modified_time" content="2020-06-28T12:57:54+08:00" />
+<meta itemprop="name" content="多线程基本原理">
+<meta itemprop="description" content="多线程基本原理 为什么需要多线程  Java的执⾏模型是同步/阻塞(block)的 从本质上来说是为了占满CPU的使用率，以达到n*100%(n指CPU的核心数)；一般程序可以简单的分为CPU密集型和IO密集型；对于IO密集型应⽤极其有⽤，对于CPU密集型应⽤稍有折扣 ，  多线程带来了什么问题，如何避免？   方法栈是线程私有的
+  静态变量/类变量是被所有线程共享的
+  线程难的本质原因是你要看着同⼀份代码，想象不同的⼈在疯狂地以乱序执⾏它
+  一般来说，问题多出现在需要共享变量的情况下，多个并行线程，需要操作同一个变量，如果对这个变量的操作不是原子性的（比如：i&#43;=1），且由于多个线程的并行，是乱序的，存在会先取值，被截断，再被其他线程取值，计算，赋值，再回到本线程计算，赋值，导致计算结果的不可控制。
+  如何避免？
+ 需要保证操作公共变量时，保证该操作是原子性的，不会被拆分为多个操作，且被乱序执行    线程的生命周期及基本状态  java的线程生命周期有6种状态  New（初始化状态） Runnable（就绪状态） Running（运行状态） Blocked（阻塞状态） Terminated(终止状态)      New(初始化状态)：当线程对象创建后，即进入了新建状态，如：Thread t = new Thread();
+  Runnable(就绪状态): 当调用线程对象的start()方法，线程即进入就绪状态。处于就绪的线程，只是说明此线程已经做好了准备，随时等待CPU调度执行,并不是说执行了start()此线程立即就会执行
+  Running(运行状态): 当就绪状态中的线程获得了CPU执行资源,执行run()中的代码,这样的线程称为运行状态的线程.
+  Blocked(阻塞状态): 处于运行状态中的线程由于某种原因,暂时放弃对CPU的使用权，停止执行,此时进入阻塞状态,直到其进入到就绪状态,才有机会再次被CPU调用以进入到运行状态.线程的阻塞状态分为两种: 第一种,Waiting(无时间限制的等待状态): 这个状态下是不能分配CPU执行的，有三种情况会使得Running状态到waiting状态
+ 调用无参的Object的wait方法.等到notifyAll() 或者 notify() 唤醒就会回到Runnable状态. 调用无参的Thread.join()方法.比如你在主线程里建立了一个线程A,调用A.join(),那么你的主线程是得等A执行完了才会继续执行,这时你的主线程就是等待状态 调用LockSupport.park()方法,LockSupport是Java6引入的一个工具类Java并发包中的锁都是基于它实现的,再调用LockSupport.unpark(Thread thread),就会回到Runnable状态 第二种，Timed_Waiting(有时间限制的等待状态)：  其实这个状态和Waiting就是有没有超时时间的差别，这个状态下也是不能分配CPU执行的。有五种情况会使得Runnable状态到waiting状态。">
+<meta itemprop="datePublished" content="2020-06-28T12:57:54&#43;08:00" />
+<meta itemprop="dateModified" content="2020-06-28T12:57:54&#43;08:00" />
+<meta itemprop="wordCount" content="78">
+
+
+
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="多线程基本原理"/>
+<meta name="twitter:description" content="多线程基本原理 为什么需要多线程  Java的执⾏模型是同步/阻塞(block)的 从本质上来说是为了占满CPU的使用率，以达到n*100%(n指CPU的核心数)；一般程序可以简单的分为CPU密集型和IO密集型；对于IO密集型应⽤极其有⽤，对于CPU密集型应⽤稍有折扣 ，  多线程带来了什么问题，如何避免？   方法栈是线程私有的
+  静态变量/类变量是被所有线程共享的
+  线程难的本质原因是你要看着同⼀份代码，想象不同的⼈在疯狂地以乱序执⾏它
+  一般来说，问题多出现在需要共享变量的情况下，多个并行线程，需要操作同一个变量，如果对这个变量的操作不是原子性的（比如：i&#43;=1），且由于多个线程的并行，是乱序的，存在会先取值，被截断，再被其他线程取值，计算，赋值，再回到本线程计算，赋值，导致计算结果的不可控制。
+  如何避免？
+ 需要保证操作公共变量时，保证该操作是原子性的，不会被拆分为多个操作，且被乱序执行    线程的生命周期及基本状态  java的线程生命周期有6种状态  New（初始化状态） Runnable（就绪状态） Running（运行状态） Blocked（阻塞状态） Terminated(终止状态)      New(初始化状态)：当线程对象创建后，即进入了新建状态，如：Thread t = new Thread();
+  Runnable(就绪状态): 当调用线程对象的start()方法，线程即进入就绪状态。处于就绪的线程，只是说明此线程已经做好了准备，随时等待CPU调度执行,并不是说执行了start()此线程立即就会执行
+  Running(运行状态): 当就绪状态中的线程获得了CPU执行资源,执行run()中的代码,这样的线程称为运行状态的线程.
+  Blocked(阻塞状态): 处于运行状态中的线程由于某种原因,暂时放弃对CPU的使用权，停止执行,此时进入阻塞状态,直到其进入到就绪状态,才有机会再次被CPU调用以进入到运行状态.线程的阻塞状态分为两种: 第一种,Waiting(无时间限制的等待状态): 这个状态下是不能分配CPU执行的，有三种情况会使得Running状态到waiting状态
+ 调用无参的Object的wait方法.等到notifyAll() 或者 notify() 唤醒就会回到Runnable状态. 调用无参的Thread.join()方法.比如你在主线程里建立了一个线程A,调用A.join(),那么你的主线程是得等A执行完了才会继续执行,这时你的主线程就是等待状态 调用LockSupport.park()方法,LockSupport是Java6引入的一个工具类Java并发包中的锁都是基于它实现的,再调用LockSupport.unpark(Thread thread),就会回到Runnable状态 第二种，Timed_Waiting(有时间限制的等待状态)：  其实这个状态和Waiting就是有没有超时时间的差别，这个状态下也是不能分配CPU执行的。有五种情况会使得Runnable状态到waiting状态。"/>
+
+  </head>
+
+  <body class="ma0 avenir bg-near-white">
+
+    
+   
+  
+
+  <header>
+    <div class="bg-black">
+      <nav class="pv3 ph3 ph4-ns" role="navigation">
+  <div class="flex-l justify-between items-center center">
+    <a href="https://laowang2020.github.io" class="f3 fw2 hover-white no-underline white-90 dib">
+      My New Hugo Site
+    </a>
+    <div class="flex-l items-center">
+      
+
+      
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </div>
+  </div>
+</nav>
+
+    </div>
+  </header>
+
+
+
+    <main class="pb7" role="main">
+      
+  
+  <article class="flex-l flex-wrap justify-between mw8 center ph3">
+    <header class="mt4 w-100">
+      <aside class="instapaper_ignoref b helvetica tracked">
+          
+        POSTS
+      </aside>
+      
+
+
+
+
+  <div id="sharing" class="mt3">
+
+    
+    <a href="https://www.facebook.com/sharer.php?u=https://laowang2020.github.io/posts/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/" class="facebook no-underline" aria-label="share on Facebook">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M28.765,50.32h6.744V33.998h4.499l0.596-5.624h-5.095  l0.007-2.816c0-1.466,0.14-2.253,2.244-2.253h2.812V17.68h-4.5c-5.405,0-7.307,2.729-7.307,7.317v3.377h-3.369v5.625h3.369V50.32z   M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;"/></svg>
+
+    </a>
+
+    
+    
+    <a href="https://twitter.com/share?url=https://laowang2020.github.io/posts/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/&amp;text=%e5%a4%9a%e7%ba%bf%e7%a8%8b%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86" class="twitter no-underline" aria-label="share on Twitter">
+      <svg height="32px"  style="enable-background:new 0 0 67 67;" version="1.1" viewBox="0 0 67 67" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M37.167,22.283c-2.619,0.953-4.274,3.411-4.086,6.101  l0.063,1.038l-1.048-0.127c-3.813-0.487-7.145-2.139-9.974-4.915l-1.383-1.377l-0.356,1.017c-0.754,2.267-0.272,4.661,1.299,6.271  c0.838,0.89,0.649,1.017-0.796,0.487c-0.503-0.169-0.943-0.296-0.985-0.233c-0.146,0.149,0.356,2.076,0.754,2.839  c0.545,1.06,1.655,2.097,2.871,2.712l1.027,0.487l-1.215,0.021c-1.173,0-1.215,0.021-1.089,0.467  c0.419,1.377,2.074,2.839,3.918,3.475l1.299,0.444l-1.131,0.678c-1.676,0.976-3.646,1.526-5.616,1.568  C19.775,43.256,19,43.341,19,43.405c0,0.211,2.557,1.397,4.044,1.864c4.463,1.377,9.765,0.783,13.746-1.568  c2.829-1.673,5.657-5,6.978-8.221c0.713-1.716,1.425-4.851,1.425-6.354c0-0.975,0.063-1.102,1.236-2.267  c0.692-0.678,1.341-1.419,1.467-1.631c0.21-0.403,0.188-0.403-0.88-0.043c-1.781,0.636-2.033,0.551-1.152-0.402  c0.649-0.678,1.425-1.907,1.425-2.267c0-0.063-0.314,0.042-0.671,0.233c-0.377,0.212-1.215,0.53-1.844,0.72l-1.131,0.361l-1.027-0.7  c-0.566-0.381-1.361-0.805-1.781-0.932C39.766,21.902,38.131,21.944,37.167,22.283z M33,64C16.432,64,3,50.569,3,34S16.432,4,33,4  s30,13.431,30,30S49.568,64,33,64z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/></svg>
+
+    </a>
+
+    
+    <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://laowang2020.github.io/posts/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86/&amp;title=%e5%a4%9a%e7%ba%bf%e7%a8%8b%e5%9f%ba%e6%9c%ac%e5%8e%9f%e7%90%86" class="linkedin no-underline" aria-label="share on LinkedIn">
+      <svg  height="32px"  style="enable-background:new 0 0 65 65;" version="1.1" viewBox="0 0 65 65" width="32px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path d="M50.837,48.137V36.425c0-6.275-3.35-9.195-7.816-9.195  c-3.604,0-5.219,1.983-6.119,3.374V27.71h-6.79c0.09,1.917,0,20.427,0,20.427h6.79V36.729c0-0.609,0.044-1.219,0.224-1.655  c0.49-1.22,1.607-2.483,3.482-2.483c2.458,0,3.44,1.873,3.44,4.618v10.929H50.837z M22.959,24.922c2.367,0,3.842-1.57,3.842-3.531  c-0.044-2.003-1.475-3.528-3.797-3.528s-3.841,1.524-3.841,3.528c0,1.961,1.474,3.531,3.753,3.531H22.959z M34,64  C17.432,64,4,50.568,4,34C4,17.431,17.432,4,34,4s30,13.431,30,30C64,50.568,50.568,64,34,64z M26.354,48.137V27.71h-6.789v20.427  H26.354z" style="fill-rule:evenodd;clip-rule:evenodd;fill:;"/>
+</svg>
+
+    </a>
+  </div>
+
+
+      <h1 class="f1 athelas mt3 mb1">多线程基本原理</h1>
+      
+      
+      <time class="f6 mv4 dib tracked" datetime="2020-06-28T12:57:54&#43;08:00">June 28, 2020</time>
+
+      
+      
+    </header>
+    <div class="nested-copy-line-height lh-copy serif f4 nested-links nested-img mid-gray pr4-l w-two-thirds-l"><h1 id="多线程基本原理">多线程基本原理</h1>
+<h2 id="为什么需要多线程">为什么需要多线程</h2>
+<ul>
+<li>Java的执⾏模型是同步/阻塞(block)的</li>
+<li>从本质上来说是为了占满CPU的使用率，以达到n*100%(n指CPU的核心数)；一般程序可以简单的分为CPU密集型和IO密集型；对于IO密集型应⽤极其有⽤，对于CPU密集型应⽤稍有折扣 ，</li>
+</ul>
+<h2 id="多线程带来了什么问题如何避免">多线程带来了什么问题，如何避免？</h2>
+<ul>
+<li>
+<p>方法栈是线程私有的</p>
+</li>
+<li>
+<p>静态变量/类变量是被所有线程共享的</p>
+</li>
+<li>
+<p>线程难的本质原因是你要看着同⼀份代码，想象不同的⼈在疯狂地以乱序执⾏它</p>
+</li>
+<li>
+<p>一般来说，问题多出现在需要共享变量的情况下，多个并行线程，需要操作同一个变量，如果对这个变量的操作不是原子性的（比如：i+=1），且由于多个线程的并行，是乱序的，存在会先取值，被截断，再被其他线程取值，计算，赋值，再回到本线程计算，赋值，导致计算结果的不可控制。</p>
+</li>
+<li>
+<p>如何避免？</p>
+<ul>
+<li>需要保证操作公共变量时，保证该操作是原子性的，不会被拆分为多个操作，且被乱序执行</li>
+</ul>
+</li>
+</ul>
+<h2 id="线程的生命周期及基本状态">线程的生命周期及基本状态</h2>
+<ul>
+<li>java的线程生命周期有6种状态
+<ol>
+<li>New（初始化状态）</li>
+<li>Runnable（就绪状态）</li>
+<li>Running（运行状态）</li>
+<li>Blocked（阻塞状态）</li>
+<li>Terminated(终止状态)</li>
+</ol>
+</li>
+</ul>
+<ol>
+<li>
+<p>New(初始化状态)：当线程对象创建后，即进入了新建状态，如：Thread t = new Thread();</p>
+</li>
+<li>
+<p>Runnable(就绪状态): 当调用线程对象的start()方法，线程即进入就绪状态。处于就绪的线程，只是说明此线程已经做好了准备，随时等待CPU调度执行,并不是说执行了start()此线程立即就会执行</p>
+</li>
+<li>
+<p>Running(运行状态): 当就绪状态中的线程获得了CPU执行资源,执行run()中的代码,这样的线程称为运行状态的线程.</p>
+</li>
+<li>
+<p>Blocked(阻塞状态): 处于运行状态中的线程由于某种原因,暂时放弃对CPU的使用权，停止执行,此时进入阻塞状态,直到其进入到就绪状态,才有机会再次被CPU调用以进入到运行状态.线程的阻塞状态分为两种:
+第一种,Waiting(无时间限制的等待状态):
+这个状态下是不能分配CPU执行的，有三种情况会使得Running状态到waiting状态</p>
+<ul>
+<li>调用无参的Object的wait方法.等到notifyAll() 或者 notify() 唤醒就会回到Runnable状态.</li>
+<li>调用无参的Thread.join()方法.比如你在主线程里建立了一个线程A,调用A.join(),那么你的主线程是得等A执行完了才会继续执行,这时你的主线程就是等待状态</li>
+<li>调用LockSupport.park()方法,LockSupport是Java6引入的一个工具类Java并发包中的锁都是基于它实现的,再调用LockSupport.unpark(Thread thread),就会回到Runnable状态
+第二种，Timed_Waiting(有时间限制的等待状态)：</li>
+</ul>
+<p>其实这个状态和Waiting就是有没有超时时间的差别，这个状态下也是不能分配CPU执行的。有五种情况会使得Runnable状态到waiting状态。</p>
+<p>Object.wait(long timeout)。
+Thread.join(long millis)。
+Thread.sleep(long millis)。注意 Thread.sleep(long millis, int nanos) 内部调用的其实也是Thread.sleep(long millis)。
+LockSupport.parkNanos(Object blocked,long deadline)。
+LockSupport.parkUntil(long deadline)。</p>
+</li>
+<li>
+<p>Terminated(终止状态):在我们的线程正常run结束之后或者run一半异常了就是终止状态!
+注意:有个方法Thread.stop()是让线程终止的,但是这个方法已经被废弃了,不推荐使用,因为比如你这个线程得到了锁,你stop了之后这个锁也随着没了,其他线程就拿不到这个锁了,推荐使用interrupt()方法
+interrupt()会使得线程Waiting和Timed_Waiting状态得线程抛出interruptedException异常,调用interrupt()方法后,使得Running状态的线程再调用wait(),sleep(),jion()方法时抛出interruptedException异常,需要在catch中处理线程异常后的问题</p>
+<p>如果Running状态的线程没有阻塞在I/O状态的话,那只能主动检测自己是不是被中断了,使用isInterrupted().</p>
+</li>
+</ol>
+<h2 id="什么是threadlocal">什么是ThreadLocal？</h2>
+<pre><code>定义:线程局部变量是局限于线程内的变量,属于线程自身所有,不在多个线程间共享,Java提供ThreadLocal来支持线程局部变量,是一个实现线程安全的方式.
+
+任何线程局部变量一旦在工作完成后没有释放,java应用就存在内存泄漏的风险
+
+作用:ThreadLocal是一种以空间换时间的做法,在每一个Thread里面维护了一个ThreadLocal.ThreadLocal.ThreadLocalMap把数据进行隔离,数据不共享,自然就没有线程安全方面的问题了
+</code></pre>
+<h2 id="为什么需要线程池">为什么需要线程池？</h2>
+<pre><code>为了减少创建和销毁线程的次数，让每个线程可以多次使用，可根据系统情况调整执行的线程数量，防止消耗过多内存，所以我们可以使用线程池。
+
+Java中线程池的顶级接口是Executor,ExecutorService是Executor的子类，也是真正的线程池接口，它提供了提交任务和关闭线程池等方法，调用submit方法提交任务还可以返回一个Future对象，利用该对象可以了解任务执行情况，获得任务的执行结果或取消任务。
+
+由于线程池的配置比较复杂，JavaSE中定义了Executors类就是用来方便创建各种常用线程池的工具类。通过调用该工具类中的方法我们可以创建单线程池，固定数量的线程池，可缓存线程池，大小无限制的线程池，比较常用的是固定数量的线程池和可缓存的线程池，固定数量的线程池是每提交一个任务就是一个线程，直到达到线程池的最大数量，然后后面进入等待队列直到前面的任务完成才继续执行，可缓存线程池是当线程池大小超过了处理任务所需的线程，那么就会回收部分空闲的线程，当有任务来时，又智能的添加新线程来执行。
+</code></pre>
+<h2 id="线程池的构造函数中的参数都是什么含义">线程池的构造函数中的参数都是什么含义？</h2>
+<ol>
+<li>corePoolSize,核心线程池大小</li>
+<li>maximunPoolSize,线程池中最大的存活线程数</li>
+<li>keepAliveTime,超时时间</li>
+<li>unit,超过时间的单位</li>
+<li>workQueue,当调用execute方法时，如果线程池中没有空闲的可用线程，那么就会把这个Runnable对象放到该队列中。这个参数必须是一个实现BlockingQueue接口的阻塞队列，因为要保证线程安全</li>
+<li>threadFactory,线程工厂类</li>
+<li>handler,这个参数的作用是当提交任务时既没有空闲线程，任务队列也满了，这时候就会调用handler的rejectedExecution方法</li>
+</ol>
+<ul class="pa0">
+  
+</ul>
+<div class="mt6 instapaper_ignoref">
+      
+      
+      </div>
+    </div>
+
+    <aside class="w-30-l mt6-l">
+
+
+
+
+</aside>
+
+  </article>
+
+    </main>
+    <footer class="bg-black bottom-0 w-100 pa3" role="contentinfo">
+  <div class="flex justify-between">
+  <a class="f4 fw4 hover-white no-underline white-70 dn dib-ns pv2 ph3" href="https://laowang2020.github.io" >
+    &copy;  My New Hugo Site 2020 
+  </a>
+    <div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+  </div>
+</footer>
+
+    
+
+  <script src="/dist/js/app.3fc0f988d21662902933.js"></script>
+
+
+  </body>
+</html>
